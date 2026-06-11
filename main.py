@@ -1,39 +1,13 @@
-from db.incident_repository import  (get_all_incidents,
-                                     get_incident_by_id,
-                                     update_priority,
-                                     create_incident,
-                                     assign_incident,
-                                     resolve_incident,
-                                     create_audit_log)
+from agent.workflow import intent_node,execute_node
 
-print(get_all_incidents())
+state = {
+    "user_input" : "Show Incident 1"
+}
 
-print(get_incident_by_id(1))
+state = intent_node(state)
 
-update_priority(1, "Critical")
+print(state)
 
-print(get_incident_by_id(1))
+state = execute_node(state)
 
-create_incident(
-    title="CPU Usage High",
-    status="Open",
-    priority="Medium",
-    assigned_to="Raji"
-)
-
-assign_incident(
-    incident_id=1,
-    assigned_to="John"
-)
-
-resolve_incident(
-    incident_id=1,
-    resolution="Restarted database service"
-)
-
-create_audit_log(
-    action="Priority Update",
-    old_value="High",
-    new_value="Critical",
-    performed_by="Raji"
-)
+print(state)

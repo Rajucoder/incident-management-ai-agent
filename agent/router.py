@@ -1,12 +1,13 @@
+from agent.incident_tools import (get_incident_tool,
+                                  assign_incident_tool,
+                                  update_priority_tool,
+                                  resolve_incident_tool)
+
 def route_user_request(intent):
-    if intent == "get_incident":
-        return "get_incident_tool"
-
-    elif intent == "assign_incident":
-        return "assign_incident_tool"
-
-    elif intent == "update_priority":
-        return "update_priority_tool"
-
-    elif intent == "resolve_incident":
-        return "resolve_incident_tool"
+    routes = {
+        "get_incident_tool": get_incident_tool,
+        "assign_incident": assign_incident_tool,
+        "update_priority": update_priority_tool,
+        "resolve_incident": resolve_incident_tool
+    }
+    return routes.get(intent)
