@@ -1,7 +1,10 @@
-from agent.workflow import intent_node,execute_node
+from agent.workflow import (
+    intent_node,
+    execute_node
+)
 
 state = {
-    "user_input" : "Show Incident 1"
+    "user_input": "Show Incident 1"
 }
 
 state = intent_node(state)
