@@ -109,6 +109,83 @@ flowchart TD
     I --> J[Return Result]
 ```
 
+## Planned Project Architecture
+
+```mermaid
+flowchart TD
+    U[User Request] --> LG[LangGraph Workflow]
+
+    subgraph Agent Layer
+        LG --> IN[Intent Detection]
+        IN --> PE[Parameter Extraction]
+        PE --> RT[Request Router]
+        RT --> TL[Incident Tools]
+    end
+
+    subgraph Service Operations
+        TL --> GET[Retrieve Incident]
+        TL --> PRI[Update Priority]
+        TL --> ASN[Assign Incident]
+        TL --> RES[Resolve Incident]
+        TL --> AUD[Create Audit Log]
+    end
+
+    subgraph Data Layer
+        GET --> REPO[Incident Repository]
+        PRI --> REPO
+        ASN --> REPO
+        RES --> REPO
+        AUD --> REPO
+        REPO --> PG[(PostgreSQL)]
+
+        PG --> INC[incidents]
+        PG --> KB[knowledge_base]
+        PG --> LOG[audit_logs]
+    end
+
+    subgraph RAG Layer
+        LG --> RET[Knowledge Retrieval]
+        RET --> KB
+        RET --> LLM[LLM Response Generation]
+    end
+
+    subgraph Evaluation Layer
+        LG --> DE[DeepEval]
+        LG --> RG[RAGAS]
+        DE --> MF[MLflow]
+        RG --> MF
+    end
+
+    REPO --> LG
+    LLM --> LG
+    LG --> OUT[Structured Response]
+```
+
+### Layer Responsibilities
+
+1. **User Interface**: Starts with `main.py` and can later become a REST API or web interface.
+2. **Agent and Workflow Layer**: Uses shared state, intent detection, parameter extraction, routing, and LangGraph workflow execution.
+3. **Tool Layer**: Exposes incident operations while keeping agent logic separate from database logic.
+4. **Repository Layer**: Contains PostgreSQL queries for retrieval, creation, assignment, priority updates, resolution, and auditing.
+5. **Database Layer**: Stores operational incidents, troubleshooting knowledge, and audit history.
+6. **RAG Layer**: Retrieves knowledge-base context and supplies it to an LLM for resolution recommendations.
+7. **Evaluation Layer**: Uses DeepEval and RAGAS for quality evaluation, with MLflow tracking experiments and metrics.
+
+### Planned Request Flow
+
+```text
+User request
+→ LangGraph workflow
+→ Detect intent
+→ Extract parameters
+→ Validate parameters
+→ Route to tool
+→ Execute repository operation
+→ Create audit log
+→ Return structured result
+→ Record evaluation and tracing data
+```
+
 ## Current Progress
 
 - PostgreSQL database layer
