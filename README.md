@@ -10,7 +10,8 @@ An enterprise-style incident management AI agent built with Python, PostgreSQL, 
 - Resolve incidents
 - Create audit logs
 - Route user requests to incident tools
-- Extract incident IDs dynamically from user input
+- Extract incident IDs, assignees, priorities, and resolutions dynamically
+- Preserve capitalization in extracted parameter values
 
 ## Project Structure
 
@@ -80,13 +81,16 @@ The project expects these tables:
 uv run python main.py
 ```
 
-Example input:
+## Supported Commands
 
 ```text
 Show Incident 15
+Assign Incident 15 to Alice Smith
+Update Priority of Incident 8 to Critical
+Resolve Incident 12 with resolution Server restarted
 ```
 
-The workflow extracts `incident_id = 15` and retrieves the matching incident from PostgreSQL.
+The workflow detects the intent, extracts the required parameters, routes the request to the matching tool, and returns the result.
 
 ## Running Tests
 
@@ -94,13 +98,15 @@ The workflow extracts `incident_id = 15` and retrieves the matching incident fro
 uv run pytest
 ```
 
+The test suite currently contains 16 tests. Workflow tools and database connections are mocked, so unit tests do not access PostgreSQL.
+
 ## Current Workflow
 
 ```mermaid
 flowchart TD
     A[User Input] --> B[intent_node]
     B --> C[Detect Intent]
-    C --> D[Extract Incident ID]
+    C --> D[Extract Action Parameters]
     D --> E[route_user_request]
     E --> F[Incident Tool]
     F --> G[Repository Function]
@@ -195,15 +201,16 @@ User request
 - Intent detection
 - Tool routing
 - Incident tools
-- Dynamic incident ID extraction
-- Workflow tests
+- Dynamic extraction of incident IDs, assignees, priorities, and resolutions
+- Execution of retrieve, assign, priority-update, and resolve workflows
+- Mock-only workflow and repository unit tests
+- 16 passing tests
 
 ## Roadmap
 
-1. Extract parameters for assignment, priority updates, and resolution
-2. Execute all incident actions through the workflow
-3. Create audit logs for incident changes
-4. Build the workflow with LangGraph
-5. Add knowledge-base retrieval and RAG
-6. Evaluate with DeepEval and RAGAS
-7. Track experiments with MLflow
+1. Create audit logs for incident changes
+2. Validate that target incidents exist and report unsuccessful updates
+3. Build the workflow with LangGraph
+4. Add knowledge-base retrieval and RAG
+5. Evaluate with DeepEval and RAGAS
+6. Track experiments with MLflow
